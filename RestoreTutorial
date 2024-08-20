@@ -1,0 +1,72 @@
+# Step-by-Step Tutorial: How to Use the Database Restore Script
+
+This guide will walk you through the process of restoring your MySQL database using a simple script. No technical expertise is needed—just follow these steps carefully.
+
+## Before You Begin:
+
+### Ensure You Have the Necessary Files:
+- The script file (`restore.bat`).
+- The backup file you want to restore (e.g., `sql_backup_20240101_1200.sql`).
+- The backup files should be stored in the same directory.
+
+### Know Your Database Information:
+- The MySQL database name.
+- The MySQL root username (usually `root`).
+- The MySQL password.
+
+## Step 1: Locate the Script and Backup Files
+
+### Find the Folder:
+- Go to the folder on your computer where the `restore.bat` script and the backup files are stored.
+- You can do this by navigating through your file explorer (the folder icon on your taskbar).
+
+### Open the Folder:
+- Double-click on the folder to open it.
+- Make sure you can see the `restore.bat` file and your backup files (.sql files).
+
+## Step 2: Run the Restore Script
+
+### Double-Click the Script:
+- Find the `restore.bat` file in the folder.
+- Double-click on `restore.bat`. This will open a black window called the Command Prompt.
+
+### Enter the Backup File Name:
+- After you double-click the script, a black window will appear asking you to "Enter the backup file name to restore."
+- Type the name of the backup file you want to restore (e.g., `sql_backup_20240101_1200.sql`).
+- **Important:** Make sure you type the file name exactly as it appears, including the `.sql` at the end.
+- Press **Enter** on your keyboard.
+
+### Wait for the Process to Complete:
+- The script will start restoring the database. This might take a few moments, depending on the size of the backup file.
+- You will see some messages in the black window (Command Prompt) as the script runs.
+
+## Step 3: Confirm the Restore Was Successful
+
+### Look for a Success Message:
+- After the restore process is finished, the script will display a message saying "Database restored successfully."
+- If you see this message, the database has been restored correctly.
+
+### Check for Errors:
+- If there is an issue during the restore, the script will show an error message.
+- If you see an error, note down the message and contact someone who can help you troubleshoot it.
+
+## Step 4: Close the Command Prompt
+
+### Close the Window:
+- Once you see the success message, you can close the black window (Command Prompt).
+- To do this, click the X in the top-right corner of the window, or simply press any key when prompted.
+
+## Step 5: Verify the Restoration (Optional)
+
+### Check Your Database:
+- If you know how to access your MySQL database (perhaps through a web interface or a database management tool), you can verify that the data has been restored correctly.
+- If you're unsure how to do this, you can ask someone who manages the database for you to check it.
+
+## You're Done!
+You have successfully restored your MySQL database using the restore script. If you need to restore the database again in the future, just follow these same steps.
+
+## Tips:
+- Always make sure you have the correct backup file before restoring.
+- If you encounter any issues, don't hesitate to ask for help from someone with more technical knowledge.
+
+This guide should make the process simple and straightforward, even if you're not familiar with using computers.
