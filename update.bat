@@ -8,8 +8,8 @@ set "logFile=%repoPath%\deploy.log"
 
 REM Function to log messages
 :WriteMessage
-echo %date% %time%: %1 >> "%logFile%"
-
+echo %date% %time%: %~1 >> "%logFile%"
+goto :eof
 
 REM Log start of script execution
 call :WriteMessage "Script started."
@@ -37,18 +37,21 @@ REM Pull latest changes from git
 call :WriteMessage "Changing directory to repository path: %repoPath%"
 cd /d "%repoPath%" || (
     call :WriteMessage "Failed to change directory to %repoPath%. Exiting..."
+    set "errorOccurred=1"
     goto :Cleanup
 )
+
 call :WriteMessage "Fetching latest changes..."
 git fetch || (
     call :WriteMessage "Failed to fetch from git repository. Exiting..."
+    set "errorOccurred=1"
     goto :Cleanup
 )
 
 REM Check if there are any changes by comparing the local and remote hashes
 call :WriteMessage "Checking for changes..."
-for /f "delims=" %%a in ('git rev-parse @') do set localHash=%%a
-for /f "delims=" %%a in ('git rev-parse @{u}') do set remoteHash=%%a
+for /f "delims=" %%a in ('git rev-parse @') do set "localHash=%%a"
+for /f "delims=" %%a in ('git rev-parse @{u}') do set "remoteHash=%%a"
 
 if not "%localHash%" == "%remoteHash%" (
     call :WriteMessage "Changes detected. Deploying..."
@@ -57,6 +60,7 @@ if not "%localHash%" == "%remoteHash%" (
     call :WriteMessage "Pulling latest changes..."
     git pull || (
         call :WriteMessage "Failed to pull latest changes. Exiting..."
+        set "errorOccurred=1"
         goto :Cleanup
     )
 
@@ -64,11 +68,14 @@ if not "%localHash%" == "%remoteHash%" (
     call :WriteMessage "Building Docker images..."
     docker-compose build || (
         call :WriteMessage "Failed to build Docker images. Exiting..."
+        set "errorOccurred=1"
         goto :Cleanup
     )
+
     call :WriteMessage "Deploying Docker containers..."
     docker-compose up -d --scale app=2 || (
         call :WriteMessage "Failed to start Docker containers. Exiting..."
+        set "errorOccurred=1"
         goto :Cleanup
     )
 
@@ -80,6 +87,7 @@ if not "%localHash%" == "%remoteHash%" (
     call :WriteMessage "Scaling down old containers..."
     docker-compose down --remove-orphans || (
         call :WriteMessage "Failed to scale down old containers. Exiting..."
+        set "errorOccurred=1"
     )
 
     call :WriteMessage "Deployment completed."
