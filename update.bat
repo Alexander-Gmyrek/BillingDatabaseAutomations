@@ -11,10 +11,13 @@ REM Function to log messages
 echo %date% %time%: %1 >> "%logFile%"
 goto :eof
 
+REM Log start of script execution
+call :WriteMessage "Script started."
+
 REM Debug: Check the paths and initial variables
-echo Repository Path: %repoPath%
-echo Lock File: %lockFile%
-echo Log File: %logFile%
+call :WriteMessage "Repository Path: %repoPath%"
+call :WriteMessage "Lock File: %lockFile%"
+call :WriteMessage "Log File: %logFile%"
 
 REM Check if lock file exists
 if exist "%lockFile%" (
@@ -24,78 +27,69 @@ if exist "%lockFile%" (
 )
 
 REM Create lock file
-echo Creating lock file...
+call :WriteMessage "Creating lock file..."
 echo. > "%lockFile%"
 
 REM Try block equivalent
 set "errorOccurred="
 
 REM Pull latest changes from git
-echo Changing directory to repository path: %repoPath%
+call :WriteMessage "Changing directory to repository path: %repoPath%"
 cd /d "%repoPath%" || (
-    echo Failed to change directory to %repoPath%. Exiting...
-    call :WriteMessage "Failed to change directory to %repoPath%"
+    call :WriteMessage "Failed to change directory to %repoPath%. Exiting..."
     goto :Cleanup
 )
-echo Fetching latest changes...
+call :WriteMessage "Fetching latest changes..."
 git fetch || (
-    echo Failed to fetch from git repository. Exiting...
-    call :WriteMessage "Failed to fetch from git repository"
+    call :WriteMessage "Failed to fetch from git repository. Exiting..."
     goto :Cleanup
 )
 
 REM Check if there are any changes by comparing the local and remote hashes
-echo Checking for changes...
+call :WriteMessage "Checking for changes..."
 for /f "delims=" %%a in ('git rev-parse @') do set localHash=%%a
 for /f "delims=" %%a in ('git rev-parse @{u}') do set remoteHash=%%a
 
 if not "%localHash%" == "%remoteHash%" (
     call :WriteMessage "Changes detected. Deploying..."
-    echo Changes detected. Deploying...
 
     REM Pull latest changes
-    echo Pulling latest changes...
+    call :WriteMessage "Pulling latest changes..."
     git pull || (
-        echo Failed to pull latest changes. Exiting...
-        call :WriteMessage "Failed to pull latest changes"
+        call :WriteMessage "Failed to pull latest changes. Exiting..."
         goto :Cleanup
     )
 
     REM Build and deploy using Docker Compose
-    echo Building Docker images...
+    call :WriteMessage "Building Docker images..."
     docker-compose build || (
-        echo Failed to build Docker images. Exiting...
-        call :WriteMessage "Failed to build Docker images"
+        call :WriteMessage "Failed to build Docker images. Exiting..."
         goto :Cleanup
     )
-    echo Deploying Docker containers...
+    call :WriteMessage "Deploying Docker containers..."
     docker-compose up -d --scale app=2 || (
-        echo Failed to start Docker containers. Exiting...
-        call :WriteMessage "Failed to start Docker containers"
+        call :WriteMessage "Failed to start Docker containers. Exiting..."
         goto :Cleanup
     )
 
     REM Sleep for 30 seconds to ensure the new container is up
-    echo Waiting for 30 seconds...
+    call :WriteMessage "Waiting for 30 seconds..."
     timeout /t 30 /nobreak >nul
 
     REM Scale down the old container
-    echo Scaling down old containers...
+    call :WriteMessage "Scaling down old containers..."
     docker-compose down --remove-orphans || (
-        echo Failed to scale down old containers. Exiting...
-        call :WriteMessage "Failed to scale down old containers"
+        call :WriteMessage "Failed to scale down old containers. Exiting..."
     )
 
     call :WriteMessage "Deployment completed."
-    echo Deployment completed.
 ) else (
     call :WriteMessage "No changes detected."
-    echo No changes detected.
 )
 
 :Cleanup
 REM Finally block equivalent: Remove lock file
-echo Cleaning up: Removing lock file...
+call :WriteMessage "Cleaning up: Removing lock file..."
 del "%lockFile%"
 
 if defined errorOccurred (
