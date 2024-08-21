@@ -6,7 +6,7 @@ set MYSQL_PASSWORD={{MYSQL_PASSWORD}}
 set MYSQL_DATABASE={{MYSQL_DATABASE}}
 
 REM Set the backup directory and file name with timestamp
-set BACKUP_DIR={{BACKUP_DIR}}
+set "BACKUP_DIR={{BACKUP_DIR}}"  REM Quotes to avoid trailing spaces
 set BACKUP_FILE=%BACKUP_DIR%\sql_backup_%DATE:~-10,2%-%DATE:~-7,2%-%DATE:~-4,4%_%TIME:~0,2%%TIME:~3,2%.sql
 
 REM Display the variables for testing
