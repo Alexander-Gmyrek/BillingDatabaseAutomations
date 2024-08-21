@@ -1,35 +1,76 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
-REM Read from the config file
-for /f "tokens=1,2 delims== " %%a in ('type config.ini ^| findstr /r "^[^;]"') do (
-    set %%a=%%b
+REM Read from the config file and store each setting as a variable
+for /f "tokens=1,* delims== " %%a in ('type config.ini ^| findstr /r "^[^;]"') do (
+    set "%%a=%%b"
 )
 
-REM Replace placeholders in the batch files using PowerShell
-call :replace_placeholders backup.bat backup_final.bat
-call :replace_placeholders deploy.bat deploy_final.bat
-call :replace_placeholders restart.bat restart_final.bat
-call :replace_placeholders restore.bat restore_final.bat
-call :replace_placeholders update.bat update_final.bat
+REM Replace placeholders in backup.bat
+set "input=backup.bat"
+set "output=backup_final.bat"
+
+echo. > "%output%"
+for /f "delims=" %%a in (%input%) do (
+    set "line=%%a"
+    set "line=!line:MYSQL_USER=%MySQL_user%!"
+    set "line=!line:MYSQL_PASSWORD=%MySQL_password%!"
+    set "line=!line:MYSQL_DATABASE=%MySQL_database%!"
+    set "line=!line:BACKUP_DIR=%Paths_backup_dir%!"
+    set "line=!line:BACKUP_FILE=%Paths_backup_dir%\%Backup_backup_file_format%!"
+    echo !line! >> "%output%"
+)
+
+REM Replace placeholders in deploy.bat
+set "input=deploy.bat"
+set "output=deploy_final.bat"
+
+echo. > "%output%"
+for /f "delims=" %%a in (%input%) do (
+    set "line=%%a"
+    set "line=!line:C:\\path\\to\\your\\docker-compose\\files=%Paths_docker_compose_dir%!"
+    echo !line! >> "%output%"
+)
+
+REM Replace placeholders in restart.bat
+set "input=restart.bat"
+set "output=restart_final.bat"
+
+echo. > "%output%"
+for /f "delims=" %%a in (%input%) do (
+    set "line=%%a"
+    set "line=!line:C:\\path\\to\\your\\docker-compose\\files=%Paths_docker_compose_dir%!"
+    echo !line! >> "%output%"
+)
+
+REM Replace placeholders in restore.bat
+set "input=restore.bat"
+set "output=restore_final.bat"
+
+echo. > "%output%"
+for /f "delims=" %%a in (%input%) do (
+    set "line=%%a"
+    set "line=!line:MYSQL_USER=%MySQL_user%!"
+    set "line=!line:MYSQL_PASSWORD=%MySQL_password%!"
+    set "line=!line:MYSQL_DATABASE=%MySQL_database%!"
+    set "line=!line:BACKUP_DIR=%Paths_backup_dir%!"
+    set "line=!line:set /p BACKUP_FILE=Enter the backup file name to restore=%Restore_prompt_message%!"
+    echo !line! >> "%output%"
+)
+
+REM Replace placeholders in update.bat
+set "input=update.bat"
+set "output=update_final.bat"
+
+echo. > "%output%"
+for /f "delims=" %%a in (%input%) do (
+    set "line=%%a"
+    set "line=!line:repoPath=%Paths_repo_path%!"
+    set "line=!line:lockFile=%Paths_repo_path%\\deploy.lock!"
+    set "line=!line:logFile=%Paths_repo_path%\\deploy.log!"
+    echo !line! >> "%output%"
+)
 
 echo Setup complete. Final scripts have been generated as *_final.bat.
 endlocal
 exit /b 0
-
-:replace_placeholders
-set input=%1
-set output=%2
-
-powershell -Command ^
-    "(Get-Content %input%) | ForEach-Object { $_ -replace 'MYSQL_USER', '$env:MySQL_user' `
-                               -replace 'MYSQL_PASSWORD', '$env:MySQL_password' `
-                               -replace 'MYSQL_DATABASE', '$env:MySQL_database' `
-                               -replace 'BACKUP_DIR', '$env:Paths_backup_dir' `
-                               -replace 'BACKUP_FILE', '$env:Backup_backup_file_format' `
-                               -replace 'docker-compose_dir', '$env:Paths_docker_compose_dir' `
-                               -replace 'repoPath', '$env:Paths_repo_path' `
-                               -replace 'lockFile', '$env:Paths_repo_path\\deploy.lock' `
-                               -replace 'logFile', '$env:Paths_repo_path\\deploy.log' `
-                               -replace 'prompt_message', '$env:Restore_prompt_message' } | Set-Content %output%"
-exit /b
