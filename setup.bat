@@ -6,6 +6,14 @@ for /f "tokens=1,* delims== " %%a in ('type config.ini ^| findstr /r "^[^;]"') d
     set "%%a=%%b"
 )
 
+REM Echo the values to confirm they are being read correctly
+echo MySQL User: %MySQL_user%
+echo MySQL Password: %MySQL_password%
+echo MySQL Database: %MySQL_database%
+echo Backup Directory: %Paths_backup_dir%
+
+pause
+
 REM Function to replace placeholders in a file
 call :replace_placeholders "backup.bat" "backup_final.bat"
 call :replace_placeholders "deploy.bat" "deploy_final.bat"
