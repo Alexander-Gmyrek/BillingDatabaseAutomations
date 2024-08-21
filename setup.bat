@@ -6,6 +6,12 @@ for /f "tokens=1,* delims== " %%a in ('type config.ini ^| findstr /r "^[^;]"') d
     set "%%a=%%b"
 )
 
+REM Convert variable names to uppercase for consistent usage
+for %%a in (MySQL_user MySQL_password MySQL_database Paths_backup_dir Paths_docker_compose_dir Paths_repo_path Restore_prompt_message) do (
+    set "%%a=!%%a!"
+    set "%%a=!%%a!"
+)
+
 REM Echo the values to confirm they are being read correctly
 echo MySQL User: %MySQL_user%
 echo MySQL Password: %MySQL_password%
