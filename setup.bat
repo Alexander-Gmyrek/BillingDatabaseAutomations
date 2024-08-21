@@ -1,24 +1,10 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Read config.ini and set variables
-for /f "tokens=1,* delims== " %%a in ('type config.ini ^| findstr /r "^[^;]"') do (
+REM Read the config.ini file and store each setting as a variable
+for /f "tokens=1,* delims==" %%a in ('type config.ini') do (
     set "%%a=%%b"
 )
-
-REM Convert variable names to uppercase for consistent usage
-for %%a in (MySQL_user MySQL_password MySQL_database Paths_backup_dir Paths_docker_compose_dir Paths_repo_path Restore_prompt_message) do (
-    set "%%a=!%%a!"
-    set "%%a=!%%a!"
-)
-
-REM Echo the values to confirm they are being read correctly
-echo MySQL User: %MySQL_user%
-echo MySQL Password: %MySQL_password%
-echo MySQL Database: %MySQL_database%
-echo Backup Directory: %Paths_backup_dir%
-
-pause
 
 REM Function to replace placeholders in a file
 call :replace_placeholders "backup.bat" "backup_final.bat"
@@ -28,6 +14,7 @@ call :replace_placeholders "restore.bat" "restore_final.bat"
 call :replace_placeholders "update.bat" "update_final.bat"
 
 echo Setup complete. Final scripts have been generated as *_final.bat.
+endlocal
 exit /b 0
 
 :replace_placeholders
@@ -37,6 +24,7 @@ del "%output%" 2>nul
 (
     for /f "usebackq delims=" %%a in ("%input%") do (
         set "line=%%a"
+        setlocal enabledelayedexpansion
         set "line=!line:{{MYSQL_USER}}=%MySQL_user%!"
         set "line=!line:{{MYSQL_PASSWORD}}=%MySQL_password%!"
         set "line=!line:{{MYSQL_DATABASE}}=%MySQL_database%!"
@@ -44,7 +32,7 @@ del "%output%" 2>nul
         set "line=!line:{{DOCKER_COMPOSE_DIR}}=%Paths_docker_compose_dir%!"
         set "line=!line:{{REPO_PATH}}=%Paths_repo_path%!"
         set "line=!line:{{prompt_message}}=%Restore_prompt_message%!"
-        echo !line! >> "%output%"
+        endlocal & echo.!line! >> "%output%"
     )
 )
 exit /b
