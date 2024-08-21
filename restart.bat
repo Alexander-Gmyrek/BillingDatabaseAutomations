@@ -1,6 +1,6 @@
 @echo off
 REM Navigate to the Docker compose directory
-cd /d "C:\path\to\your\docker-compose\files" || (
+cd /d "{{DOCKER_COMPOSE_DIR}}" || (
     echo Failed to navigate to the Docker compose directory.
     exit /b 1
 )

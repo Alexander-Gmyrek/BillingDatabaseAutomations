@@ -1,15 +1,15 @@
 @echo off
 
 REM Set MySQL credentials and database information
-set "MYSQL_USER=root"
-set "MYSQL_PASSWORD=Root"
-set "MYSQL_DATABASE=modelBillingDBv1"
+set MYSQL_USER={{MYSQL_USER}}
+set MYSQL_PASSWORD={{MYSQL_PASSWORD}}
+set MYSQL_DATABASE={{MYSQL_DATABASE}}
 
 REM Set the path to the backup directory
-set "BACKUP_DIR=C:\DockerBackups"
+set BACKUP_DIR={{BACKUP_DIR}}
 
 REM Prompt the user to enter the backup file name they want to restore
-set /p "BACKUP_FILE=Enter the backup file name to restore (e.g., sql_backup_YYYYMMDD_HHMM.sql): "
+set /p BACKUP_FILE="{{prompt_message}}"
 
 REM Check if the backup file exists
 if not exist "%BACKUP_DIR%\%BACKUP_FILE%" (
