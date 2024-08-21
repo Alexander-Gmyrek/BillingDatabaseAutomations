@@ -16,7 +16,7 @@ echo MySQL Database: %MYSQL_DATABASE%
 echo Backup Directory: %BACKUP_DIR%
 echo Backup File: %BACKUP_FILE%
 
-pause
+
 
 REM Create backup directory if it doesn't exist
 if not exist "%BACKUP_DIR%" (
@@ -38,6 +38,6 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo Backup created successfully: %BACKUP_FILE%
 
-pause
+
 
 :EOF
