@@ -30,7 +30,7 @@ set "output=deploy_final.bat"
 echo. > "%output%"
 for /f "delims=" %%a in (%file%) do (
     set "line=%%a"
-    set "line=!line:docker-compose_dir=%Paths_docker_compose_dir%!"
+    set "line=!line:C:\\path\\to\\your\\docker-compose\\files=%Paths_docker_compose_dir%!"
     echo !line! >> "%output%"
 )
 
@@ -41,7 +41,7 @@ set "output=restart_final.bat"
 echo. > "%output%"
 for /f "delims=" %%a in (%file%) do (
     set "line=%%a"
-    set "line=!line:docker-compose_dir=%Paths_docker_compose_dir%!"
+    set "line=!line:C:\\path\\to\\your\\docker-compose\\files=%Paths_docker_compose_dir%!"
     echo !line! >> "%output%"
 )
 
