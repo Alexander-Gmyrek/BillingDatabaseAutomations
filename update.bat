@@ -9,7 +9,7 @@ set "logFile=%repoPath%\deploy.log"
 REM Function to log messages
 :WriteMessage
 echo %date% %time%: %1 >> "%logFile%"
-goto :eof
+
 
 REM Log start of script execution
 call :WriteMessage "Script started."
